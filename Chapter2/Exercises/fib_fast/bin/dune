@@ -1,0 +1,4 @@
+(executable
+ (public_name fib_fast)
+ (name main)
+ (libraries fib_fast))
