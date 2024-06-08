@@ -12,4 +12,10 @@ module Int = struct
   let to_string = string_of_int
 end
 
+module MyString = struct
+  type t = string
+  let to_string = Fun.id
+end
+
 module PrintInt = Print(Int)
+module PrintString = Print(MyString)
