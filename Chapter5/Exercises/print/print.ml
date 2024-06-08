@@ -19,3 +19,7 @@ end
 
 module PrintInt = Print(Int)
 module PrintString = Print(MyString)
+module StringWithPrint = struct
+  include String
+  include PrintString
+end
