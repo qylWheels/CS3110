@@ -14,3 +14,8 @@ let rec nth n s =
   let Cons(v, f) = s in
   if n = 0 then v
   else nth (n - 1) (f ())
+
+let rec next_prime (Cons(v, f)) =
+  Cons(v, fun () -> f () |> sift v |> next_prime)
+let nats_from_2 = filter (fun x -> x <> 0 && x <> 1) nats
+let primes = next_prime nats_from_2
