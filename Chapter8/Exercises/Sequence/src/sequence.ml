@@ -19,3 +19,29 @@ let rec next_prime (Cons(v, f)) =
   Cons(v, fun () -> f () |> sift v |> next_prime)
 let nats_from_2 = filter (fun x -> x <> 0 && x <> 1) nats
 let primes = next_prime nats_from_2
+
+module LazierSequence = struct 
+  type 'a t = Cons of (unit -> 'a * 'a t)
+
+  let hd seq =
+    let Cons f = seq in
+    let (h, _) = f () in
+    h
+
+  let tl seq =
+    let Cons f = seq in
+    let (_, t) = f () in
+    t
+  
+  let nats =
+    let rec nats_gen n = Cons (fun () -> (n, nats_gen (n + 1))) in
+    nats_gen 0
+
+  let rec map map_fun seq =
+    let Cons f = seq in
+    Cons (
+      fun () ->
+        let (h, t) = f () in
+        (map_fun h, map map_fun t)
+    )
+end
