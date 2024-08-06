@@ -16,7 +16,7 @@ module Maybe : Monad = struct
     | Some x -> f x
     | None -> None
 
-  let ( >>| ) m f =
+  (* let ( >>| ) m f =
     match m with
     | Some x -> Some (f x)
     | None -> None
@@ -25,7 +25,14 @@ module Maybe : Monad = struct
     match m with
     | Some (Some x) -> Some x
     | Some (None) -> None
-    | None -> None
+    | None -> None *)
+
+  let ( >>| ) m f =
+    m >>= fun x ->
+      x |> f |> return
+
+  let join m =
+    m >>= Fun.id
 end
 
 open Maybe
