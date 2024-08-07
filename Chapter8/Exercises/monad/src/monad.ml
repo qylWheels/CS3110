@@ -41,3 +41,24 @@ let add a b =
   a >>= fun x ->
     b >>= fun y ->
       return (x + y)
+
+module type FmapJoinMonad = sig
+  type 'a t
+  val ( >>| ) : 'a t -> ('a -> 'b) -> 'b t
+  val join : 'a t t -> 'a t
+  val return : 'a -> 'a t
+end
+
+module type BindMonad = sig
+  type 'a t
+  val return : 'a -> 'a t
+  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
+end
+
+(* I can't understand this *)
+module MakeMonad (M : FmapJoinMonad) : BindMonad = struct
+  include M
+  let return = return
+  let ( >>= ) m f =
+    m >>| f |> join
+end
