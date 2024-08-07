@@ -35,12 +35,15 @@ module Maybe : Monad = struct
     m >>= Fun.id
 end
 
-open Maybe
+(* open Maybe *)
 
-let add a b =
-  a >>= fun x ->
-    b >>= fun y ->
-      return (x + y)
+module Add = struct
+  open Maybe
+  let add a b =
+    a >>= fun x ->
+      b >>= fun y ->
+        return (x + y)
+end
 
 module type FmapJoinMonad = sig
   type 'a t
@@ -61,4 +64,30 @@ module MakeMonad (M : FmapJoinMonad) : BindMonad = struct
   let return = return
   let ( >>= ) m f =
     m >>| f |> join
+end
+
+module type ExtMonad = sig
+  type 'a t
+  val return : 'a -> 'a t
+  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
+  val ( >>| ) : 'a t -> ('a -> 'b) -> 'b t
+  val join : 'a t t -> 'a t
+end
+
+module ListMonad : ExtMonad = struct
+  type 'a t = 'a list
+
+  let return l = [l]
+
+  let rec ( >>= ) l f =
+    match l with
+    | [] -> []
+    | h :: t -> (f h) @ (t >>= f)
+
+  let ( >>| ) l f =
+    l >>= fun x ->
+      x |> f |> return
+
+  let join l =
+    l >>= Fun.id
 end
