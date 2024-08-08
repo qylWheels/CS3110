@@ -118,3 +118,14 @@ module Promise : PROMISE = struct
       enqueue (handler_of_callback callback output_resolver) input_promise;
       output_promise
 end
+
+module Use_lwt = struct
+
+  open Lwt.Infix
+
+  let p_and_r () =
+    let (p, r) = Lwt.wait () in
+    let _ = p >>= (fun i -> Lwt_io.printf "%i\n" i) in
+    Lwt.wakeup r 42
+
+end
